@@ -1,4 +1,5 @@
 import axios from "axios";
+import { message } from "antd";
 let urlApi = "http://192.168.31.20:3000/";
 // let urlApi = "https://api-dev.vuarausach.vn/";
 
@@ -17,11 +18,12 @@ callAPI.interceptors.response.use(
     return res;
   },
   (err) => {
+    message.error("Error");
     if (err.response && err.response.status === 401) {
-      alert("401");
+      message.error("401");
     }
     if (err.response && err.response.status === 403) {
-      alert("403");
+      message.error("403");
     }
     return Promise.reject(err);
   }

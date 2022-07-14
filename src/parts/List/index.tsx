@@ -34,6 +34,7 @@ const List: React.FC<Props> = ({ handleUpdate }) => {
     handleDelete(data)
       .then(function () {
         message.success("Success");
+        window.location.reload();
       })
       .catch(function (err) {
         message.error(err);
