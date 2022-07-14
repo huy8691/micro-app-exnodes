@@ -1,37 +1,36 @@
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import { Menu, Layout } from "antd";
-import React from "react";
-import List from "./parts/List";
-import Create from "./parts/Create";
+import { Layout, Menu } from "antd";
 import "antd/dist/antd.css";
-
-const { Header, Footer, Sider, Content } = Layout;
+import React, { useState } from "react";
+import Create from "./parts/Create";
+import Update from "./parts/Update";
+import List from "./parts/List";
 
 const App: React.FC = () => {
-  const handleUpdate = () => {
-    console.log("handle");
+  const { Sider, Content } = Layout;
+  const [data, setData] = useState({});
+  const handleUpdate = (value: any) => {
+    console.log("handle", value);
+    setData(value);
   };
   return (
-    <>
+    <Layout>
       <Layout>
-        <Layout>
-          <Sider>
-            <Menu>
-              <Menu.Item>List</Menu.Item>
-              <Menu.Item>Create</Menu.Item>
-            </Menu>
-          </Sider>
-          <Content>
+        <Sider>
+          <Menu>
+            <Menu.Item>List</Menu.Item>
+          </Menu>
+        </Sider>
+        <Content>
+          <div style={{ margin: "30px" }}>
             <Create />
+            <Update data={data} />
+          </div>
+          <div style={{ padding: "0px 30px 30px 30px", minHeight: "100vh" }}>
             <List handleUpdate={handleUpdate} />
-          </Content>
-        </Layout>
+          </div>
+        </Content>
       </Layout>
-    </>
+    </Layout>
   );
 };
 

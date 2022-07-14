@@ -1,48 +1,64 @@
-import { Space, Table, Tag, message, Popconfirm } from "antd";
-import React from "react";
-const confirm = (e: any) => {
-  console.log(e);
-  message.success("Click on Yes");
-};
-const cancel = (e: any) => {
-  console.log(e);
-  message.error("Click on No");
-};
-
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"],
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["loser"],
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-    tags: ["cool", "teacher"],
-  },
-];
+import { message, Popconfirm, Table, Button } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { callAPI } from "../../services";
+import { AxiosResponse } from "axios";
+import ReactJson from "react-json-view";
 
 type Props = {
-  handleUpdate: () => void;
+  handleUpdate: (value: string) => void;
 };
-
 const List: React.FC<Props> = ({ handleUpdate }) => {
+  const [data, setData] = useState([]);
+  const [dataProc, setDataProc] = useState({});
+  const handleDelete = (id: number): Promise<AxiosResponse> => {
+    return callAPI({
+      url: `students/${id}`,
+      method: "delete",
+    });
+  };
+  const getList = (): Promise<AxiosResponse> => {
+    return callAPI({
+      url: `students`,
+      method: "get",
+    });
+  };
+  const getProc = (): Promise<AxiosResponse> => {
+    return callAPI({
+      url: `proc`,
+      method: "get",
+    });
+  };
+
+  const confirm = (data: any) => {
+    console.log(data);
+    handleDelete(data)
+      .then(function () {
+        message.success("Success");
+      })
+      .catch(function (err) {
+        message.error(err);
+      });
+  };
+  const cancel = (e: any) => {
+    console.log(e);
+    message.error("Click on No");
+  };
+
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lastName",
+      key: "lastName",
     },
     {
       title: "Age",
@@ -50,27 +66,32 @@ const List: React.FC<Props> = ({ handleUpdate }) => {
       key: "age",
     },
     {
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
       title: "Address",
       dataIndex: "address",
       key: "address",
     },
-    {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-    },
+
     {
       title: "Update",
       key: "update",
-      render: () => <span onClick={handleUpdate}>Update</span>,
+      render: (data: any) => (
+        <span style={{ cursor: "pointer" }} onClick={() => handleUpdate(data)}>
+          Update
+        </span>
+      ),
     },
     {
       title: "Delete",
       key: "delete",
-      render: () => (
+      render: (data: any) => (
         <Popconfirm
           title="Are you sure to delete this?"
-          onConfirm={confirm}
+          onConfirm={() => confirm(data.id)}
           onCancel={cancel}
           okText="Yes"
           cancelText="No"
@@ -80,9 +101,39 @@ const List: React.FC<Props> = ({ handleUpdate }) => {
       ),
     },
   ];
+  const handleGetList = useCallback(() => {
+    getList()
+      .then((res) => {
+        const { data } = res.data;
+        setData(data);
+      })
+      .catch(() => {
+        message.error("Error");
+      });
+  }, []);
+  const handleProc = useCallback(() => {
+    getProc()
+      .then((res) => {
+        const { data } = res.data;
+        console.log("data", data);
+        setDataProc(data);
+      })
+      .catch(() => {
+        message.error("Error");
+      });
+  }, []);
+  useEffect(() => {
+    handleGetList();
+    handleProc();
+  }, [handleGetList, handleProc]);
+
   return (
     <>
+      <Button type="primary" onClick={handleGetList}>
+        Refresh List
+      </Button>
       <Table columns={columns} dataSource={data} />
+      <ReactJson src={dataProc} />
     </>
   );
 };

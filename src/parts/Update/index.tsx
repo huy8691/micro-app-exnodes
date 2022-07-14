@@ -1,21 +1,21 @@
 import { Modal, Button, Form, Input, InputNumber, message } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { callAPI } from "../../services";
 import { AxiosResponse } from "axios";
 
-const Create: React.FC<{}> = () => {
-  const create = (data: any): Promise<AxiosResponse> => {
+type Props = {
+  data: any;
+};
+const Update: React.FC<Props> = (props) => {
+  const [form] = Form.useForm();
+  const update = (data: any): Promise<AxiosResponse> => {
     return callAPI({
-      url: `students`,
-      method: "post",
+      url: `students/${props.data.id}`,
+      method: "put",
       data: data,
     });
   };
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
 
   const handleOk = () => {
     setIsModalVisible(false);
@@ -26,7 +26,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const onFinish = (values: any) => {
-    create(values)
+    update(values)
       .then(function () {
         message.success("Success");
         setIsModalVisible(false);
@@ -40,19 +40,25 @@ const Create: React.FC<{}> = () => {
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
+  useEffect(() => {
+    if (props.data.id) {
+      setIsModalVisible(true);
+      form.setFieldsValue({
+        ...props.data,
+      });
+    }
+  }, [props.data]);
   return (
     <div>
-      <Button type="primary" onClick={showModal}>
-        Create
-      </Button>
       <Modal
-        title="Create"
+        title="Update"
         visible={isModalVisible}
         footer={null}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <Form
+          form={form}
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
@@ -111,4 +117,4 @@ const Create: React.FC<{}> = () => {
   );
 };
 
-export default Create;
+export default Update;
