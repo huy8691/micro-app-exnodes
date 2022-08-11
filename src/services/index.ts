@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-let urlApi = 'http://192.168.31.20:3000/';
+let urlApi = 'http://192.168.31.21:3000/';
 // let urlApi = "https://api-dev.vuarausach.vn/";
 
 const callAPI = axios.create({

@@ -1,34 +1,67 @@
-import { Layout, Menu } from 'antd';
+import { Layout, Tabs } from 'antd';
 import 'antd/dist/antd.css';
 import React, { useState } from 'react';
-import Create from './parts/Create';
-import Update from './parts/Update';
-import List from './parts/List';
+
+// student
+import Create from './pages/students/Create';
+import Update from './pages/students/Update';
+import List from './pages/students/List';
+
+// user
+import CreateUser from './pages/user/Create';
+import UpdateUser from './pages/user/Update';
+import ListUser from './pages/user/List';
+
+const { TabPane } = Tabs;
 
 const App: React.FC = () => {
-	const { Sider, Content } = Layout;
+	const { Content } = Layout;
 	const [data, setData] = useState({});
+	const [dataUser, setDataUser] = useState({});
+	const onChange = (key: string) => {
+		console.log(key);
+	};
 	const handleUpdate = (value: any) => {
-		console.log('handle', value);
 		setData(value);
+	};
+	const handleUpdateUser = (value: any) => {
+		setDataUser(value);
 	};
 	return (
 		<Layout>
 			<Layout>
-				<Sider>
-					<Menu>
-						<Menu.Item>List</Menu.Item>
-					</Menu>
-				</Sider>
-				<Content>
-					<div style={{ margin: '30px' }}>
-						<Create />
-						<Update data={data} />
-					</div>
-					<div style={{ padding: '0px 30px 30px 30px', minHeight: '100vh' }}>
-						<List handleUpdate={handleUpdate} />
-					</div>
-				</Content>
+				<Tabs defaultActiveKey='1' onChange={onChange} tabPosition='left'>
+					<TabPane tab='Student' key='1'>
+						<h2 style={{ textAlign: 'center' }}>Student</h2>
+						<Content>
+							<div style={{ margin: '30px', padding: '20px' }}>
+								<Create />
+								<Update data={data} />
+							</div>
+							<div
+								style={{ padding: '0px 30px 30px 30px', minHeight: '100vh' }}
+							>
+								<List handleUpdate={handleUpdate} />
+							</div>
+						</Content>
+					</TabPane>
+					<TabPane tab='User' key='2'>
+						<div style={{ background: '#ddd' }}>
+							<h2 style={{ textAlign: 'center', padding: '20px' }}>User</h2>
+							<Content>
+								<div style={{ margin: '30px' }}>
+									<CreateUser />
+									<UpdateUser data={dataUser} />
+								</div>
+								<div
+									style={{ padding: '0px 30px 30px 30px', minHeight: '100vh' }}
+								>
+									<ListUser handleUpdate={handleUpdateUser} />
+								</div>
+							</Content>
+						</div>
+					</TabPane>
+				</Tabs>
 			</Layout>
 		</Layout>
 	);
